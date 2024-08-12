@@ -5,68 +5,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginBtn = document.getElementById("loginBtn");
     const registerBtn = document.getElementById("registerBtn");
     const logoutBtn = document.getElementById("logoutBtn");
-    const alunoForm = document.getElementById("alunoForm");
-    const professorForm = document.getElementById("professorForm");
-    const cursoForm = document.getElementById("cursoForm");
 
-    // Dados de usuários
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const adminUser = { username: "admin", password: "admin123" };
-
-    // Verifica se o usuário administrador já está na lista de usuários
-    if (!users.some(user => user.username === adminUser.username)) {
-        users.push(adminUser);
-        localStorage.setItem("users", JSON.stringify(users));
-    }
-
-    // Função de login
-    const login = (username, password) => {
-        const user = users.find(u => u.username === username && u.password === password);
-        if (user) {
-            sessionStorage.setItem("loggedInUser", JSON.stringify(user));
-            showContent();
-        } else {
-            alert("Usuário ou senha incorretos!");
-        }
-    };
-
-    // Função de logout
-    const logout = () => {
-        sessionStorage.removeItem("loggedInUser");
-        hideContent();
-    };
-
-    // Função de registro
-    const register = (username, password) => {
-        if (users.some(u => u.username === username)) {
-            alert("Nome de usuário já existe!");
-            return;
-        }
-        const newUser = { username, password };
-        users.push(newUser);
-        localStorage.setItem("users", JSON.stringify(users));
-        alert("Usuário registrado com sucesso!");
-        registerModal.hide();
-    };
-
-    // Mostrar conteúdo após login
+    // Função para mostrar conteúdo após login
     const showContent = () => {
         loginBtn.classList.add("d-none");
         registerBtn.classList.add("d-none");
         logoutBtn.classList.remove("d-none");
-        alunoForm.classList.remove("d-none");
-        professorForm.classList.remove("d-none");
-        cursoForm.classList.remove("d-none");
+        document.querySelectorAll('section').forEach(section => section.classList.remove("d-none"));
     };
 
-    // Esconder conteúdo ao deslogar
+    // Função para esconder conteúdo ao deslogar
     const hideContent = () => {
         loginBtn.classList.remove("d-none");
         registerBtn.classList.remove("d-none");
         logoutBtn.classList.add("d-none");
-        alunoForm.classList.add("d-none");
-        professorForm.classList.add("d-none");
-        cursoForm.classList.add("d-none");
+        document.querySelectorAll('section').forEach(section => section.classList.add("d-none"));
     };
 
     // Verificar se o usuário está logado
@@ -76,6 +29,39 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         hideContent();
     }
+
+    // Event listeners para login e registro
+    loginBtn.addEventListener('click', () => loginModal.show());
+    registerBtn.addEventListener('click', () => registerModal.show());
+
+    // Função de login
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+        // Aqui você deve implementar a lógica de verificação do login
+        // Por enquanto, vamos apenas simular um login bem-sucedido
+        sessionStorage.setItem("loggedInUser", JSON.stringify({username}));
+        loginModal.hide();
+        showContent();
+    });
+
+    // Função de registro
+    document.getElementById("registerForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = document.getElementById("registerUsername").value;
+        const password = document.getElementById("registerPassword").value;
+        // Aqui você deve implementar a lógica de registro
+        // Por enquanto, vamos apenas simular um registro bem-sucedido
+        alert("Usuário registrado com sucesso!");
+        registerModal.hide();
+    });
+
+    // Função de logout
+    logoutBtn.addEventListener("click", () => {
+        sessionStorage.removeItem("loggedInUser");
+        hideContent();
+    });
 
     // Cursos e suas disciplinas
     const cursos = {
@@ -154,4 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
         alunoForm.reset();
         document.getElementById("disciplinasContainer").innerHTML = "";
     });
+});
+
+// Função para abrir o modal de login
+loginBtn.addEventListener('click', function() {
+    loginModal.show();
+});
+
+// Função para abrir o modal de registro
+registerBtn.addEventListener('click', function() {
+    registerModal.show();
 });

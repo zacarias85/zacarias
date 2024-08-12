@@ -8,81 +8,70 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Login Modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="loginForm">
-                        <div class="mb-3">
-                            <label for="loginUsername" class="form-label">Nome de Usuário</label>
-                            <input type="text" class="form-control" id="loginUsername" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="loginPassword" class="form-label">Senha</label>
-                            <input type="password" class="form-control" id="loginPassword" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
-                </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Sistema de Cadastro</a>
+            <div class="d-flex">
+                <button id="loginBtn" class="btn btn-outline-primary me-2">Login</button>
+                <button id="registerBtn" class="btn btn-outline-secondary me-2">Registrar</button>
+                <button id="logoutBtn" class="btn btn-outline-danger d-none">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+   <!-- Modal para Login -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="loginUsername" class="form-label">Usuário</label>
+                        <input type="text" class="form-control" id="loginUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Register Modal -->
-    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="registerModalLabel">Registrar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="registerForm">
-                        <div class="mb-3">
-                            <label for="registerUsername" class="form-label">Nome de Usuário</label>
-                            <input type="text" class="form-control" id="registerUsername" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="registerPassword" class="form-label">Senha</label>
-                            <input type="password" class="form-control" id="registerPassword" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Registrar</button>
-                    </form>
-                </div>
+<!-- Modal para Registro -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerModalLabel">Registro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="registerUsername" class="form-label">Usuário</label>
+                        <input type="text" class="form-control" id="registerUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPassword" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="registerPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </form>
             </div>
         </div>
     </div>
-
-    <header class="bg-dark text-white text-center p-4">
-        <h1>Gerenciamento de Escola</h1>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container-fluid">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#alunos">Alunos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#professores">Professores</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#cursos">Cursos</a>
-                    </li>
-                </ul>
-                <button id="loginBtn" class="btn btn-outline-light">Login</button>
-                <button id="registerBtn" class="btn btn-outline-light ms-2">Registrar</button>
-                <button id="logoutBtn" class="btn btn-outline-light d-none">Logout</button>
-            </div>
-        </nav>
-    </header>
+</div>
 
     <div class="container mt-4">
         <!-- Alunos Section -->
-        <section id="alunos">
+        <section id="alunos" class="d-none">
             <h2>Cadastro de Alunos</h2>
             <form id="alunoForm" class="mb-3">
                 <div class="row">
@@ -135,7 +124,7 @@
         </section>
 
         <!-- Professores Section -->
-        <section id="professores" class="mt-5">
+        <section id="professores" class="d-none mt-5">
             <h2>Cadastro de Professores</h2>
             <form id="professorForm" class="mb-3">
                 <div class="row">
@@ -166,7 +155,7 @@
         </section>
 
         <!-- Cursos Section -->
-        <section id="cursos" class="mt-5">
+        <section id="cursos" class="d-none mt-5">
             <h2>Cadastro de Cursos</h2>
             <form id="cursoForm" class="mb-3">
                 <div class="row">
