@@ -1,234 +1,157 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const alunoForm = document.getElementById('alunoForm');
-    const professorForm = document.getElementById('professorForm');
-    const cursoForm = document.getElementById('cursoForm');
+document.addEventListener("DOMContentLoaded", () => {
+    // Elementos do DOM
+    const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+    const registerModal = new bootstrap.Modal(document.getElementById("registerModal"));
+    const loginBtn = document.getElementById("loginBtn");
+    const registerBtn = document.getElementById("registerBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const alunoForm = document.getElementById("alunoForm");
+    const professorForm = document.getElementById("professorForm");
+    const cursoForm = document.getElementById("cursoForm");
 
-    let alunos = JSON.parse(localStorage.getItem('alunos')) || [];
-    let professores = JSON.parse(localStorage.getItem('professores')) || [];
-    let cursos = JSON.parse(localStorage.getItem('cursos')) || [];
+    // Dados de usuários
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const adminUser = { username: "admin", password: "admin123" };
 
-    const alunoTable = document.getElementById('alunoTable').querySelector('tbody');
-    const professorTable = document.getElementById('professorTable').querySelector('tbody');
-    const cursoTable = document.getElementById('cursoTable').querySelector('tbody');
-
-    // Renderizar tabelas
-    function renderAlunos() {
-        alunoTable.innerHTML = '';
-        alunos.forEach((aluno, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${aluno.nome}</td>
-                <td>${aluno.idade}</td>
-                <td>${aluno.curso}</td>
-                <td>${aluno.classe}</td>
-                <td>${aluno.notas.join(', ')}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm me-2" onclick="editarAluno(${index})">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="removerAluno(${index})">Remover</button>
-                    <button class="btn btn-info btn-sm ms-2" onclick="addNota(${index})">Adicionar Nota</button>
-                </td>
-            `;
-            alunoTable.appendChild(row);
-        });
-        localStorage.setItem('alunos', JSON.stringify(alunos));
+    // Verifica se o usuário administrador já está na lista de usuários
+    if (!users.some(user => user.username === adminUser.username)) {
+        users.push(adminUser);
+        localStorage.setItem("users", JSON.stringify(users));
     }
 
-    function renderProfessores() {
-        professorTable.innerHTML = '';
-        professores.forEach((professor, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${professor.nome}</td>
-                <td>${professor.curso}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm me-2" onclick="editarProfessor(${index})">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="removerProfessor(${index})">Remover</button>
-                </td>
-            `;
-            professorTable.appendChild(row);
-        });
-        localStorage.setItem('professores', JSON.stringify(professores));
+    // Função de login
+    const login = (username, password) => {
+        const user = users.find(u => u.username === username && u.password === password);
+        if (user) {
+            sessionStorage.setItem("loggedInUser", JSON.stringify(user));
+            showContent();
+        } else {
+            alert("Usuário ou senha incorretos!");
+        }
+    };
+
+    // Função de logout
+    const logout = () => {
+        sessionStorage.removeItem("loggedInUser");
+        hideContent();
+    };
+
+    // Função de registro
+    const register = (username, password) => {
+        if (users.some(u => u.username === username)) {
+            alert("Nome de usuário já existe!");
+            return;
+        }
+        const newUser = { username, password };
+        users.push(newUser);
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("Usuário registrado com sucesso!");
+        registerModal.hide();
+    };
+
+    // Mostrar conteúdo após login
+    const showContent = () => {
+        loginBtn.classList.add("d-none");
+        registerBtn.classList.add("d-none");
+        logoutBtn.classList.remove("d-none");
+        alunoForm.classList.remove("d-none");
+        professorForm.classList.remove("d-none");
+        cursoForm.classList.remove("d-none");
+    };
+
+    // Esconder conteúdo ao deslogar
+    const hideContent = () => {
+        loginBtn.classList.remove("d-none");
+        registerBtn.classList.remove("d-none");
+        logoutBtn.classList.add("d-none");
+        alunoForm.classList.add("d-none");
+        professorForm.classList.add("d-none");
+        cursoForm.classList.add("d-none");
+    };
+
+    // Verificar se o usuário está logado
+    const loggedInUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    if (loggedInUser) {
+        showContent();
+    } else {
+        hideContent();
     }
 
-    function renderCursos() {
-        cursoTable.innerHTML = '';
-        cursos.forEach((curso, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${curso.nomeCurso}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm me-2" onclick="editarCurso(${index})">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="removerCurso(${index})">Remover</button>
-                </td>
+    // Cursos e suas disciplinas
+    const cursos = {
+        CB: ["Matemática", "Biologia", "Física", "Química", "Inglês", "Geografia", "História"],
+        AM: ["Matemática", "Português", "Física", "Arte", "Música", "Educação Física", "Sociologia"],
+        LB: ["Matemática", "Biologia", "Educação Física", "História", "Geografia", "Inglês", "Literatura"],
+        CG: ["Matemática", "Português", "Computação", "Lógica", "Inglês", "Física", "Programação"],
+        CD: ["Matemática", "Design Gráfico", "História da Arte", "Fotografia", "Inglês", "Web Design", "Multimídia"]
+    };
+
+    // Função para gerar inputs de notas para disciplinas baseadas no curso selecionado
+    const generateDisciplinasInputs = (curso) => {
+        const disciplinas = cursos[curso];
+        let html = "";
+        disciplinas.forEach((disciplina) => {
+            html += `
+                <div class="col">
+                    <label for="${disciplina.replace(/\s+/g, '')}" class="form-label">${disciplina}</label>
+                    <input type="number" id="${disciplina.replace(/\s+/g, '')}" class="form-control" placeholder="Nota em ${disciplina}" required>
+                </div>
             `;
-            cursoTable.appendChild(row);
         });
-        localStorage.setItem('cursos', JSON.stringify(cursos));
-    }
+        return html;
+    };
 
-    // Adicionar aluno
-    alunoForm.addEventListener('submit', (e) => {
+    // Event listener para alterar disciplinas ao escolher um curso
+    document.getElementById("cursoAluno").addEventListener("change", (e) => {
+        const selectedCurso = e.target.value;
+        const disciplinasContainer = document.getElementById("disciplinasContainer");
+        disciplinasContainer.innerHTML = generateDisciplinasInputs(selectedCurso);
+    });
+
+    // Event listeners para login, logout e registro
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
         e.preventDefault();
-        const nome = document.getElementById('nomeAluno').value.trim();
-        const idade = document.getElementById('idadeAluno').value.trim();
-        const curso = document.getElementById('cursoAluno').value.trim();
-        const classe = document.getElementById('classeAluno').value.trim();
-
-        if (nome && idade && curso && classe) {
-            alunos.push({ nome, idade, curso, classe, notas: [] });
-            renderAlunos();
-            alunoForm.reset();
-        } else {
-            alert('Por favor, preencha todos os campos.');
-        }
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+        login(username, password);
+        loginModal.hide();
     });
 
-    // Adicionar professor
-    professorForm.addEventListener('submit', (e) => {
+    document.getElementById("registerForm").addEventListener("submit", (e) => {
         e.preventDefault();
-        const nome = document.getElementById('nomeProfessor').value.trim();
-        const curso = document.getElementById('cursoProfessor').value.trim();
-
-        if (nome && curso) {
-            professores.push({ nome, curso });
-            renderProfessores();
-            professorForm.reset();
-        } else {
-            alert('Por favor, preencha todos os campos.');
-        }
+        const username = document.getElementById("registerUsername").value;
+        const password = document.getElementById("registerPassword").value;
+        register(username, password);
     });
 
-    // Adicionar curso
-    cursoForm.addEventListener('submit', (e) => {
+    logoutBtn.addEventListener("click", logout);
+
+    // Adiciona aluno ao clicar em adicionar
+    alunoForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const nomeCurso = document.getElementById('nomeCurso').value.trim();
+        const nome = document.getElementById("nomeAluno").value;
+        const idade = document.getElementById("idadeAluno").value;
+        const curso = document.getElementById("cursoAluno").value;
 
-        if (nomeCurso) {
-            cursos.push({ nomeCurso });
-            renderCursos();
-            cursoForm.reset();
-        } else {
-            alert('Por favor, preencha o nome do curso.');
-        }
-    });
+        const notas = {};
+        cursos[curso].forEach((disciplina) => {
+            const nota = document.getElementById(disciplina.replace(/\s+/g, '')).value;
+            notas[disciplina] = nota;
+        });
 
-    // Função para editar aluno
-    window.editarAluno = function (index) {
-        const aluno = alunos[index];
-        document.getElementById('editNomeAluno').value = aluno.nome;
-        document.getElementById('editIdadeAluno').value = aluno.idade;
-        document.getElementById('editCursoAluno').value = aluno.curso;
-        document.getElementById('editClasseAluno').value = aluno.classe;
-
-        const modal = new bootstrap.Modal(document.getElementById('editAlunoModal'));
-        modal.show();
-
-        document.getElementById('editAlunoForm').onsubmit = function (e) {
-            e.preventDefault();
-            aluno.nome = document.getElementById('editNomeAluno').value.trim();
-            aluno.idade = document.getElementById('editIdadeAluno').value.trim();
-            aluno.curso = document.getElementById('editCursoAluno').value.trim();
-            aluno.classe = document.getElementById('editClasseAluno').value.trim();
-            renderAlunos();
-            modal.hide();
+        const aluno = {
+            nome,
+            idade,
+            curso,
+            notas
         };
-    };
 
-    // Função para editar professor
-    window.editarProfessor = function (index) {
-        const professor = professores[index];
-        document.getElementById('editNomeProfessor').value = professor.nome;
-        document.getElementById('editCursoProfessor').value = professor.curso;
+        const alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+        alunos.push(aluno);
+        localStorage.setItem("alunos", JSON.stringify(alunos));
 
-        const modal = new bootstrap.Modal(document.getElementById('editProfessorModal'));
-        modal.show();
-
-        document.getElementById('editProfessorForm').onsubmit = function (e) {
-            e.preventDefault();
-            professor.nome = document.getElementById('editNomeProfessor').value.trim();
-            professor.curso = document.getElementById('editCursoProfessor').value.trim();
-            renderProfessores();
-            modal.hide();
-        };
-    };
-
-    // Função para editar curso
-    window.editarCurso = function (index) {
-        const curso = cursos[index];
-        document.getElementById('editNomeCurso').value = curso.nomeCurso;
-
-        const modal = new bootstrap.Modal(document.getElementById('editCursoModal'));
-        modal.show();
-
-        document.getElementById('editCursoForm').onsubmit = function (e) {
-            e.preventDefault();
-            curso.nomeCurso = document.getElementById('editNomeCurso').value.trim();
-            renderCursos();
-            modal.hide();
-        };
-    };
-
-    // Função para adicionar nota
-    window.addNota = function (index) {
-        const nota = prompt('Digite a nota do aluno:');
-        if (nota) {
-            alunos[index].notas.push(nota);
-            renderAlunos();
-        }
-    };
-
-    // Função para remover aluno
-    window.removerAluno = function (index) {
-        if (confirm('Deseja realmente remover este aluno?')) {
-            alunos.splice(index, 1);
-            renderAlunos();
-        }
-    };
-
-    // Função para remover professor
-    window.removerProfessor = function (index) {
-        if (confirm('Deseja realmente remover este professor?')) {
-            professores.splice(index, 1);
-            renderProfessores();
-        }
-    };
-
-    // Função para remover curso
-    window.removerCurso = function (index) {
-        if (confirm('Deseja realmente remover este curso?')) {
-            cursos.splice(index, 1);
-            renderCursos();
-        }
-    };
-
-    // Função de busca
-    document.getElementById('searchAluno').addEventListener('input', function () {
-        const searchTerm = this.value.toLowerCase();
-        const filteredAlunos = alunos.filter(aluno => aluno.nome.toLowerCase().includes(searchTerm));
-        renderAlunos(filteredAlunos);
+        alert("Aluno adicionado com sucesso!");
+        alunoForm.reset();
+        document.getElementById("disciplinasContainer").innerHTML = "";
     });
-
-    document.getElementById('searchProfessor').addEventListener('input', function () {
-        const searchTerm = this.value.toLowerCase();
-        const filteredProfessores = professores.filter(professor => professor.nome.toLowerCase().includes(searchTerm));
-        renderProfessores(filteredProfessores);
-    });
-
-    document.getElementById('searchCurso').addEventListener('input', function () {
-        const searchTerm = this.value.toLowerCase();
-        const filteredCursos = cursos.filter(curso => curso.nomeCurso.toLowerCase().includes(searchTerm));
-        renderCursos(filteredCursos);
-    });
-
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', function () {
-        if (confirm('Deseja realmente sair?')) {
-            window.location.href = 'login.html';
-        }
-    });
-
-    // Inicializar
-    renderAlunos();
-    renderProfessores();
-    renderCursos();
 });

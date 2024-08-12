@@ -8,6 +8,56 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginUsername" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="loginUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">Registrar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label for="registerUsername" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="registerUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="registerPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <header class="bg-dark text-white text-center p-4">
         <h1>Gerenciamento de Escola</h1>
         <nav class="navbar navbar-expand-lg navbar-dark">
@@ -23,12 +73,15 @@
                         <a class="nav-link" href="#cursos">Cursos</a>
                     </li>
                 </ul>
-                <button id="logoutBtn" class="btn btn-outline-light">Logout</button>
+                <button id="loginBtn" class="btn btn-outline-light">Login</button>
+                <button id="registerBtn" class="btn btn-outline-light ms-2">Registrar</button>
+                <button id="logoutBtn" class="btn btn-outline-light d-none">Logout</button>
             </div>
         </nav>
     </header>
 
     <div class="container mt-4">
+        <!-- Alunos Section -->
         <section id="alunos">
             <h2>Cadastro de Alunos</h2>
             <form id="alunoForm" class="mb-3">
@@ -40,7 +93,14 @@
                         <input type="number" id="idadeAluno" class="form-control" placeholder="Idade" required>
                     </div>
                     <div class="col">
-                        <input type="text" id="cursoAluno" class="form-control" placeholder="Curso" required>
+                        <select id="cursoAluno" class="form-control" required>
+                            <option value="">Selecione um curso</option>
+                            <option value="CB">CB</option>
+                            <option value="AM">AM</option>
+                            <option value="LB">LB</option>
+                            <option value="CG">CG</option>
+                            <option value="CD">CD</option>
+                        </select>
                     </div>
                     <div class="col">
                         <input type="text" id="classeAluno" class="form-control" placeholder="Classe" required>
@@ -50,7 +110,12 @@
                     </div>
                 </div>
             </form>
-            <input type="text" id="searchAluno" class="form-control mb-3" placeholder="Buscar Aluno...">
+
+            <!-- Seção para adicionar notas por disciplina -->
+            <div id="disciplinas" class="mb-3">
+                <!-- Disciplinas serão geradas dinamicamente -->
+            </div>
+
             <h3>Lista de Alunos</h3>
             <table id="alunoTable" class="table table-striped">
                 <thead>
@@ -69,6 +134,7 @@
             </table>
         </section>
 
+        <!-- Professores Section -->
         <section id="professores" class="mt-5">
             <h2>Cadastro de Professores</h2>
             <form id="professorForm" class="mb-3">
@@ -84,7 +150,6 @@
                     </div>
                 </div>
             </form>
-            <input type="text" id="searchProfessor" class="form-control mb-3" placeholder="Buscar Professor...">
             <h3>Lista de Professores</h3>
             <table id="professorTable" class="table table-striped">
                 <thead>
@@ -100,6 +165,7 @@
             </table>
         </section>
 
+        <!-- Cursos Section -->
         <section id="cursos" class="mt-5">
             <h2>Cadastro de Cursos</h2>
             <form id="cursoForm" class="mb-3">
@@ -112,7 +178,6 @@
                     </div>
                 </div>
             </form>
-            <input type="text" id="searchCurso" class="form-control mb-3" placeholder="Buscar Curso...">
             <h3>Lista de Cursos</h3>
             <table id="cursoTable" class="table table-striped">
                 <thead>
